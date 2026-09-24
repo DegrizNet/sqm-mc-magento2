@@ -222,6 +222,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     private $customerAtt    = null;
     private $_mapFields     = null;
+    private $_mapFieldsLoaded = false;
 
     /**
      * Data constructor.
@@ -394,12 +395,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function resetMapFields()
     {
         $this->_mapFields = null;
+        $this->_mapFieldsLoaded = false;
     }
     public function getMapFields($storeId = null)
     {
-        if (!$this->_mapFields) {
-            $customerAtt = $this->getCustomerAtts();
+        // Remember an empty mapping too: this is called for every synced customer and
+        // getCustomerAtts() loads all customer attributes each time.
+        if (!$this->_mapFieldsLoaded) {
+            $this->_mapFieldsLoaded = true;
             $data = $this->getConfigValue(self::XML_MERGEVARS, $storeId);
+            if (!$data) {
+                return $this->_mapFields;
+            }
+            $customerAtt = $this->getCustomerAtts();
             try {
                 $data = $this->unserialize($data);
                 if (is_array($data)) {
