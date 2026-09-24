@@ -56,12 +56,8 @@ class Sqmmcjs extends \Magento\Framework\View\Element\Template
             $storeId
         );
 
-        // if we have URL cached or integration is disabled
-        // then avoid initialization of SqualoMail Helper and all linked classes (~30 classes)
-        if ($active && !$url) {
-            $url = $this->_helper->getJsUrl($storeId);
-        }
-
-        return $url;
+        // Never call the API while rendering the storefront (it blocked uncached pages for up to
+        // the API timeout whenever the URL was missing); Cron\Ecommerce fetches a missing URL.
+        return $active ? (string)$url : '';
     }
 }

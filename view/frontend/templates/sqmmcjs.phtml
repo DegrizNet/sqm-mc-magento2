@@ -1,4 +1,37 @@
 <?php
-    $url = $this->getJsUrl();
+/**
+ * @var $block \SqualoMail\SqmMcMagentoTwo\Block\Sqmmcjs
+ * @var $secureRenderer \Magento\Framework\View\Helper\SecureHtmlRenderer
+ */
+$url = $block->getJsUrl();
+if (!$url) {
+    return;
+}
+// JSON_HEX_* makes the literal safe inside an inline <script>.
+$jsUrl = json_encode($url, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES);
+// Load the SqualoMail site script (tracking/popup) only after the page has fully loaded and
+// the browser is idle, so it never competes with the shop's own resources or delays rendering.
+$script = <<<JS
+(function () {
+    var load = function () {
+        var s = document.createElement('script');
+        s.src = {$jsUrl};
+        s.async = true;
+        document.body.appendChild(s);
+    };
+    var idle = function () {
+        if ('requestIdleCallback' in window) {
+            window.requestIdleCallback(load, {timeout: 3000});
+        } else {
+            setTimeout(load, 1);
+        }
+    };
+    if (document.readyState === 'complete') {
+        idle();
+    } else {
+        window.addEventListener('load', idle);
+    }
+})();
+JS;
 ?>
-<script type="text/javascript" src="<?php echo $url;?>" defer></script>
+<?= /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false) ?>
