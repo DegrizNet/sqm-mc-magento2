@@ -29,6 +29,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_MAPPING           = 'sqmmc/general/mapping';
     const XML_SQM_MC_STORE        = 'sqmmc/general/monkeystore';
     const XML_SQM_MC_JS_URL       = 'sqmmc/general/sqmmcjsurl';
+    const XML_LOAD_SITE_SCRIPT    = 'sqmmc/general/load_site_script';
+    const XML_POPUP_SNIPPET       = 'sqmmc/general/popup_snippet';
     const XML_PATH_CONFIRMATION_FLAG = 'newsletter/subscription/confirm';
     const XML_PATH_STORE             = 'sqmmc/ecommerce/store';
     const XML_PATH_ECOMMERCE_ACTIVE  = 'sqmmc/ecommerce/active';

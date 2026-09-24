@@ -58,6 +58,30 @@ class Sqmmcjs extends \Magento\Framework\View\Element\Template
 
         // Never call the API while rendering the storefront (it blocked uncached pages for up to
         // the API timeout whenever the URL was missing); Cron\Ecommerce fetches a missing URL.
-        return $active ? (string)$url : '';
+        $load = $this->_scopeConfig->isSetFlag(
+            \SqualoMail\SqmMcMagentoTwo\Helper\Data::XML_LOAD_SITE_SCRIPT, ScopeInterface::SCOPE_STORES,
+            $storeId
+        );
+        return ($active && $load) ? (string)$url : '';
+    }
+
+    /**
+     * Pop-up code copied from the Squalo app (Forms > Pop-ups > Websites).
+     *
+     * @return string
+     */
+    public function getPopupSnippet()
+    {
+        $storeId = $this->_storeManager->getStore()->getId();
+        if (!$this->_scopeConfig->getValue(
+            \SqualoMail\SqmMcMagentoTwo\Helper\Data::XML_PATH_ACTIVE, ScopeInterface::SCOPE_STORES,
+            $storeId
+        )) {
+            return '';
+        }
+        return trim((string)$this->_scopeConfig->getValue(
+            \SqualoMail\SqmMcMagentoTwo\Helper\Data::XML_POPUP_SNIPPET, ScopeInterface::SCOPE_STORES,
+            $storeId
+        ));
     }
 }
